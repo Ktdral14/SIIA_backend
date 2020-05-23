@@ -12,7 +12,7 @@ $correo     = $_POST['correo'];
 $contrasena = $_POST['contrasena'];
 
 $correo         = htmlspecialchars(filter_var($correo, FILTER_SANITIZE_EMAIL));
-$hashContrasena = hash("sha256", htmlspecialchars($contrasena));
+// $hashContrasena = hash("sha256", htmlspecialchars($contrasena));
 
 $sql = "SELECT 
     id_usuarios, 
@@ -65,7 +65,7 @@ $stmt->bind_result(
 );
 
 if ($stmt->fetch()) {
-    if ($contrasenaUsuario == $hashContrasena) {
+    if ($contrasenaUsuario == $contrasena) {
         $response = [
             'idUsuario'     => $idUsuarios,
             'idAreas'       => $idAreas,

@@ -1,5 +1,4 @@
 <?php
-// TODO: MODIFICAR PARA ADECUAR A LOS CAMBIOS EN LAS PANTALLAS
 
 error_reporting(0);
 header('Access-Control-Allow-Origin: *');
