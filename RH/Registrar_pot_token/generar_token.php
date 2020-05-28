@@ -1,6 +1,6 @@
 <?php
 
-//error_reporting(0);
+error_reporting(0);
 header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json; charset=utf-8');
 
@@ -14,9 +14,6 @@ $response = array();
 
 $correo     = $_POST['correo'];
 $area     = $_POST['area'];
-
-$mail = new PHPMailer\PHPMailer\PHPMailer();
-$mail->isSMTP();
 
 $correo     = htmlspecialchars(filter_var($correo, FILTER_SANITIZE_EMAIL));
 $area     = htmlspecialchars(filter_var($area, FILTER_SANITIZE_EMAIL));
@@ -44,14 +41,14 @@ $token = bin2hex(random_bytes((10 - (10 % 2)) / 2));
 <h2 style="text-align: left;"><strong><img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/Logo-TecNM-2017.png" alt="logo" width="80" height="49" /></strong></h2>
 </th>
 <th style="background-color: #74b9ff; height: 89px;">
-<h2 style="text-align: left;"><span style="color: #ffffff;"><strong>Token para registrarse en SIIAA.</strong></span></h2>
+<h2 style="text-align: left;"><span style="color: #ffffff;"><strong>Recuerda Bien.</strong></span></h2>
 </th>
 </tr>
 <tr style="height: 128px;">
 <td style="width: 86.8333px; height: 128px;">&nbsp;</td>
 <td style="width: 857.167px; height: 128px;">
 <p>Recientemente se genero un token para que puedas registrarte.</p>
-<p>Tu token te servira para poder registrarte en el SIIAA con el area de: '.$area.'</p>
+<p>Tu token te servira para poder registrarte en el SIIAA.</p>
 <p>Tu token es:</p>
 </td>
 </tr>
