@@ -24,19 +24,19 @@ $area     = htmlspecialchars(filter_var($area, FILTER_SANITIZE_EMAIL));
 $token = bin2hex(random_bytes((10 - (10 % 2)) / 2));
 
 /* PROCESO DE ENVIO */
-        // Configuración del servidor SMTP
-        $mail->SMTPDebug = 0;
-        $mail->SMTPSecure = 'ssl';
-        $mail->Host = 'mail.mante.hosting.acm.org';
-        $mail->Port = 465;
+// Configuración del servidor SMTP
+$mail->SMTPDebug = 0;
+$mail->SMTPSecure = 'ssl';
+$mail->Host = 'mail.mante.hosting.acm.org';
+$mail->Port = 465;
 
-        // Datos del correo
-        $mail->Username = "siia.sup.tm@gmail.com"; //correo de soporte
-        $mail->Password = "aT17.zSxHL"; //contraseña de soporte
-        $mail->setFrom('siia.sup.tm@gmail.com', 'Soporte Tec Mante');
-        $mail->addAddress($correo, $nombres);
-        $mail->Subject = 'Token generado';
-        $mail->Body = '
+// Datos del correo
+$mail->Username = "siia.sup.tm@gmail.com"; //correo de soporte
+$mail->Password = "aT17.zSxHL"; //contraseña de soporte
+$mail->setFrom('siia.sup.tm@gmail.com', 'Soporte Tec Mante');
+$mail->addAddress($correo, $nombres);
+$mail->Subject = 'Token generado';
+$mail->Body = '
         <table style="background-color: #dfe6e9; height: 109px; margin-left: auto; margin-right: auto; width: 484px;">
 <tbody>
 <tr style="text-align: center; height: 89px;">
@@ -51,7 +51,7 @@ $token = bin2hex(random_bytes((10 - (10 % 2)) / 2));
 <td style="width: 86.8333px; height: 128px;">&nbsp;</td>
 <td style="width: 857.167px; height: 128px;">
 <p>Recientemente se genero un token para que puedas registrarte.</p>
-<p>Tu token te servira para poder registrarte en el SIIAA con el area de: '.$area.'</p>
+<p>Tu token te servira para poder registrarte en el SIIAA con el area de: ' . $area . '</p>
 <p>Tu token es:</p>
 </td>
 </tr>
@@ -75,54 +75,54 @@ $token = bin2hex(random_bytes((10 - (10 % 2)) / 2));
 </table>
 <p>&nbsp;</p>
         ';
-        $mail->CharSet = 'UTF-8';
-        $mail->IsHTML(true);
+$mail->CharSet = 'UTF-8';
+$mail->IsHTML(true);
 
-        if (!$mail->send()) {
-            $response =[
-                'error' => "Error al enviar el E-Mail: " . $mail->ErrorInfo
+if (!$mail->send()) {
+    $response = [
+        'error' => "Error al enviar el E-Mail: " . $mail->ErrorInfo
+    ];
+} else {
+    $sqlArea = "SELECT id_areas, nombre_area FROM areas WHERE nombre_area = ?";
+
+    $stmtArea = $conexion->prepare($sqlArea);
+
+    $stmtArea->bind_param("s", $area);
+
+    $stmtArea->execute();
+
+    $stmtArea->bind_result($idAreas, $nombres_areas);
+
+    if ($stmtArea->fetch()) {
+
+        $stmtArea->store_result();
+
+
+        $sql = "INSERT INTO usuarios (id_areas, correo_electronico, token) VALUES (?, ?, ?)";
+
+        $stmt = $conexion->prepare($sql);
+
+        $stmt->bind_param("iss", $idAreas, $correo, $token);
+
+        $stmt->execute();
+
+        if ($conexion->affected_rows >= 1) {
+            $response = [
+                'exito' => 'El token se envio al correo',
+                'token' => $token
             ];
         } else {
-            $sqlArea = "SELECT id_areas, nombre_area FROM areas WHERE nombre_area = ?";
+            $response = [
+                'error' => 'El correo ya tiene un token'
+            ];
+        }
+    } else {
+        $error = 'No se encontro el area';
+        $response = [
+            'error' => $error
+        ];
+    }
+}
 
-            $stmtArea = $conexion->prepare($sqlArea);
-                    
-            $stmtArea->bind_param("s", $area);
-                    
-            $stmtArea->execute();
-                    
-            $stmtArea->bind_result($idAreas, $nombres_areas);
-                    
-            if ($stmtArea->fetch()) {
-                
-                    $stmtArea->store_result();
-            
-            
-                    $sql = "INSERT INTO usuarios (id_areas, correo_electronico, token) VALUES (?, ?, ?)";
-            
-                    $stmt = $conexion->prepare($sql);
-                    
-                    $stmt->bind_param("iss", $idAreas, $correo, $token);
-                    
-                    $stmt->execute();
-                    
-                    if ($conexion->affected_rows >= 1) {
-                        $response = [
-                            'exito' => 'El token se envio al correo',
-                            'token' => $token
-                        ];
-                    } else {
-                        $response = [
-                            'error' => 'El correo ya tiene un token'
-                        ];
-                    }
-            }else{
-                $error = 'No se encontro el area';
-                    $response = [
-                        'error' => $error
-                    ];
-            }
-                    }
-                
-                
+
 echo json_encode($response);
