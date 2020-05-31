@@ -126,4 +126,6 @@ if (isset($_FILES['file'])) {
     ];
 }
 
+$conexion->close();
+
 echo json_encode($response);

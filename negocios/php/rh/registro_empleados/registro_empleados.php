@@ -1,10 +1,10 @@
-<?php 
+<?php
+
 error_reporting(0);
 header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json; charset=utf-8');
 
-require '../../../../../datos/php/conexion.php';
-
+require '../../../../datos/php/conexion.php';
 
 $response = array();
 
@@ -26,7 +26,6 @@ $numExt     = $_POST['numExt'];
 $correo     = $_POST['correo'];
 $contrasenaConfirmar = $_POST['contrasenaConfirmar'];
 
-
 $nombres    = htmlspecialchars(filter_var($nombres, FILTER_SANITIZE_STRING));
 $apePat     = htmlspecialchars(filter_var($apePat, FILTER_SANITIZE_STRING));
 $apeMat     = htmlspecialchars(filter_var($apeMat, FILTER_SANITIZE_STRING));
@@ -45,58 +44,74 @@ $numExt     = htmlspecialchars(filter_var($numExt, FILTER_SANITIZE_STRING));
 $correo     = htmlspecialchars(filter_var($correo, FILTER_SANITIZE_EMAIL));
 $contrasenaConfirmar = htmlspecialchars(filter_var($contrasenaConfirmar, FILTER_SANITIZE_STRING));
 
+if ($contrasena == $contrasenaConfirmar) {
 
-if($contrasena == $contrasenaConfirmar){
+	$continuar = false;
+
 	switch ($tipoEmp) {
 		case 'Docente':
-			asignaTipo(3);
+			$idAreas = 3;
+			$continuar = true;
 			break;
 		case 'Mantenimiento':
-			asignaTipo(6);
+			$idAreas = 6;
+			$continuar = true;
 			break;
 		case 'Intendente':
-			asignaTipo(5);
+			$idAreas = 5;
+			$continuar = true;
 			break;
 		case 'Administrativo':
-			asignaTipo(1);
+			$idAreas = 1;
+			$continuar = true;
 			break;
 		case 'Auxiliar':
-			asignaTipo(4);
+			$idAreas = 4;
+			$continuar = true;
 			break;
-		
 		default:
-			echo "No se selecciono tipo de empleado";
+			$response = [
+				'error' => 'No se selecciono tipo de empleado'
+			];
+			$continuar = false;
 			break;
 	}
 
+	if ($continuar) {
+		$sql = "INSERT INTO usuarios
+		(id_areas, nombres, apellido_paterno, apellido_materno, 
+		fecha_de_nacimiento, ciudad, municipio, estado, 
+		codigo_postal, num_ext, num_int, colonia, 
+		calle, numero_celular, correo_electronico, contrasena) 
+		VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-}else{
-	echo "Las contrasenas no coinciden";
-}
+		$stmt = $conexion->prepare($sql);
 
+		$stmt->bind_param(
+			"isssssssiiisssss",
+			$idAreas, $nombres, $apePat, $apeMat,
+			$fechaNac, $ciudad, $municipio, $estado, 
+			$cp, $numExt, $numInt, $colonia, 
+			$calle, $celular, $correo, $contrasena
+		);
 
-function asignaTipo($tipo){
-	$sql = "INSERT INTO usuarios(id_areas, nombres, apellido_paterno, apellido_materno, fecha_de_nacimiento, ciudad, municipio, estado, codigo_postal, num_ext, num_int, colonia, calle, numero_celular, correo_electronico, contrasena) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		$stmt->execute();
 
-$stmt = $conexion->prepare($sql);
-
-echo $conexion->error;
-
-$stmt->bind_param("sssssssiiissssss",$id_areas, $nombres, $apePat, $apeMat, $fechaNac, $ciudad, $municipio, $estado, $cp, $numExt, $numInt, $colonia, $calle, $celular, $correo, $contrasena);
-
-$stmt->execute();
-
-if ($conexion->affected_rows >= 1) {
-    $response = [
-        'exito' => 'Registro exitoso'
-    ];
+		if ($conexion->affected_rows >= 1) {
+			$response = [
+				'exito' => 'Registro exitoso'
+			];
+		} else {
+			$response = [
+				'error' => 'Ha ocurrido un error'
+			];
+		}
+	}
 } else {
-    $response = [
-        'error' => 'Ha ocurrido un error'
-    ];
+	$response = [
+		'error' => 'Las contrasenas no coinciden'
+	];
 }
-}
-
 
 $conexion->close();
 

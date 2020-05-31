@@ -40,5 +40,3 @@ if ($conexion->affected_rows >= 1) {
 $conexion->close();
 
 echo json_encode($respuesta);
-
-?>

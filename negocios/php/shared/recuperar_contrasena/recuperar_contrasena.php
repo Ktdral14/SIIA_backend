@@ -1,6 +1,6 @@
 <?php
 
-//error_reporting(0);
+error_reporting(0);
 header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json; charset=utf-8');
 
@@ -124,5 +124,6 @@ if (!$mail->send()) {
     }
 }
 
+$conexion->close();
 
 echo json_encode($response);

@@ -56,14 +56,23 @@ $stmt = $conexion->prepare($sql);
 
 $stmt->bind_param(
     "sssssssiiissssss",
-    $nombres, $apePat, 
-    $apeMat, $fechaNac, 
-    $ciudad, $municipio, 
-    $estado, $cp, 
-    $numExt, $numInt, 
-    $colonia, $calle, 
-    $celular, $correo, 
-    $contrasena, $correo_old);
+    $nombres,
+    $apePat,
+    $apeMat,
+    $fechaNac,
+    $ciudad,
+    $municipio,
+    $estado,
+    $cp,
+    $numExt,
+    $numInt,
+    $colonia,
+    $calle,
+    $celular,
+    $correo,
+    $contrasena,
+    $correo_old
+);
 
 $stmt->execute();
 
@@ -71,13 +80,13 @@ if ($conexion->affected_rows == 1) {
     $response = [
         'exito' => 'Actualizacion exitosa'
     ];
-} 
-if ($conexion->affected_rows > 1){
+}
+if ($conexion->affected_rows > 1) {
     $response = [
         'error' => 'Error more'
     ];
 }
-if ($conexion->affected_rows < 1){
+if ($conexion->affected_rows < 1) {
     $response = [
         'error' => 'No se ha podido guardar informacion'
     ];
