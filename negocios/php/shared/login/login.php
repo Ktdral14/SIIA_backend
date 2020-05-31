@@ -1,6 +1,6 @@
 <?php
 
-error_reporting(0);
+// error_reporting(0);
 header('Access-Control-Allow-Origin: *');
 header('Content-type: application/json; charset=utf-8');
 
@@ -19,8 +19,7 @@ $sql = "SELECT
     id_areas, 
     nombres, 
     apellido_paterno, 
-    apellido_materno, 
-    genero, 
+    apellido_materno,
     fecha_de_nacimiento, 
     ciudad, 
     municipio, 
@@ -31,7 +30,6 @@ $sql = "SELECT
     colonia, 
     calle, 
     numero_celular, 
-    numero_control, 
     correo_electronico, 
     contrasena
     FROM usuarios WHERE correo_electronico=?";
@@ -48,7 +46,6 @@ $stmt->bind_result(
     $nombres,
     $apePat,
     $apeMat,
-    $genero,
     $fechaNac,
     $ciudad,
     $municipio,
@@ -59,7 +56,6 @@ $stmt->bind_result(
     $colonia,
     $calle,
     $celular,
-    $nc,
     $correo,
     $contrasenaUsuario
 );
@@ -69,21 +65,19 @@ if ($stmt->fetch()) {
         $response = [
             'idUsuario'     => $idUsuarios,
             'idAreas'       => $idAreas,
-            'nombres'       => $nombres,
-            'apePat'        => $apePat,
-            'apeMat'        => $apeMat,
-            'genero'        => $genero,
+            'nombres'       => utf8_encode($nombres),
+            'apePat'        => utf8_encode($apePat),
+            'apeMat'        => utf8_encode($apeMat),
             'fechaNac'      => $fechaNac,
-            'ciudad'        => $ciudad,
-            'municipio'     => $municipio,
-            'estado'        => $estado,
+            'ciudad'        => utf8_encode($ciudad),
+            'municipio'     => utf8_encode($municipio),
+            'estado'        => utf8_encode($estado),
             'cp'            => $cp,
             'numExt'        => $numExt,
             'numInt'        => $numInt,
-            'colonia'       => $colonia,
-            'calle'         => $calle,
+            'colonia'       => utf8_encode($colonia),
+            'calle'         => utf8_encode($calle),
             'celular'       => $celular,
-            'numControl'    => $nc,
             'correo'        => $correo
         ];
     } else {
@@ -98,5 +92,4 @@ if ($stmt->fetch()) {
         'error' => $error
     ];
 }
-
 echo json_encode($response);
